@@ -31,7 +31,7 @@ You can use this method to visit any page that requires login.
   The meta data of each rumor is stored in a dictionary, where the key is the unique rumor ID. The first attribute in the value
   corresponds to the status of the reported rumor, either in evidence collection stage (举证阶段) or processed stage (结果公示). The second attribute is 
   the URL of rumor details. The third and fourth URLs are the homepages of the rumor reporter and rumor disseminator, respectively.
-  The fifth attribute indicates the view times of this particular rumor. And the sixth attribute is the timestamp of this rumor report. 
+  The fifth attribute indicates the view times of this particular rumor report. And the sixth attribute is the timestamp of this rumor report. 
 
 ----------------------------------------------
 
