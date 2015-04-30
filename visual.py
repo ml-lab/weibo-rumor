@@ -10,6 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt 
 import numpy as np
 from collections import defaultdict
+import os
 
 
 
@@ -18,6 +19,18 @@ def load_data(file_path):
 	copy = pickle.load(open(file_path, "rb" ))
 
 	return copy
+
+
+def load_data_multi(file_path):
+	files = os.listdir(file_path)
+	print files
+	data = []
+	for pickle_file in files:
+		rumor_data = pickle.load(open(file_path+pickle_file, "rb" ))
+		data += rumor_data
+
+	return data
+
 
 def view_time_distr(data):
 	# visualize the distribution of the view times of rumors
@@ -29,7 +42,7 @@ def view_time_distr(data):
 		view_time.append(temp)
 	print "max:",np.array(view_time).max()
 
-	plt.hist(view_time,bins=np.arange(0, 200, 2),color="#9ecae1")
+	plt.hist(view_time,bins=np.arange(0, 800, 4),color="#9ecae1")
 	plt.xlabel("Rumor report view times")
 	plt.ylabel('Frequency')
 	plt.show()         # disp visualization
@@ -50,7 +63,10 @@ def report_freq_distr(data):
 	max_report_time = np.array(report_freq.values()).max()
 	print "number of unique reporters:",len(report_freq.values())
 	print "maximum reporting frequency:", max_report_time
-	max_report_keys = [k for k,v in report_freq.items() if v==max_report_time]
+	threshold = int(max_report_time*0.05)
+	print threshold
+	print np.sort(np.array(report_freq.values()))[::-1][:100]
+	max_report_keys = [(k,v) for k,v in report_freq.items() if v>30]
 	print "user id who has the maximum report time:", max_report_keys
 	#print "sum",np.sum(np.array(report_freq.values()))
 	print "number of unique rumor spreaders:",len(rumor_poster_freq.values())
@@ -67,6 +83,7 @@ def report_freq_distr(data):
 	sizes = [n[0],np.sum(n[1:9]),len(report_freq.values())-n[0]-np.sum(n[1:9])]
 	print sizes
 	colors = ['yellowgreen', 'gold', 'lightskyblue']
+	colors = ["#9ecae1", 'gold', 'yellowgreen']
 	explode = (0.1, 0, 0) # only "explode" the 2nd slice (i.e. 'Hogs')
 	plt.pie(sizes, explode=explode, labels=labels, colors=colors,
 	        autopct='%1.1f%%', shadow=True, startangle=90)
@@ -82,7 +99,7 @@ def report_freq_distr(data):
 	# The slices will be ordered and plotted counter-clockwise.
 	labels = 'once', '2-4 times','>4 times'
 	sizes = [n[0],n[1]+n[2]+n[3],entry-n[0]-n[2]-n[1]-n[3]]
-	colors = ['yellowgreen', 'gold', 'lightskyblue']
+	colors = ["#9ecae1", 'gold', 'yellowgreen']
 	explode = (0.1, 0, 0) # only "explode" the 2nd slice (i.e. 'Hogs')
 	plt.pie(sizes, explode=explode, labels=labels, colors=colors,
 	        autopct='%1.1f%%', shadow=True, startangle=90)
@@ -108,14 +125,14 @@ def report_per_month(data):
 	# http://matplotlib.org/examples/api/barchart_demo.html
 	n = len(sorted_val)
 	
-	width = 0.2  
+	width = 0.6  
 	ind = np.arange(n) 
 
 	fig, ax = plt.subplots() 
 	
 	ax.bar(ind,sorted_val,width,color="#9ecae1")
-	ax.set_xticks(ind+width)
-	ax.set_xticklabels(sorted_keys)
+	ax.set_xticks(ind)
+	ax.set_xticklabels(sorted_keys,rotation=70)
 	ax.set_ylabel('Report frequency')
 	ax.set_title('# of total rumor report cases each month')
 	plt.show()
@@ -126,8 +143,12 @@ def report_per_month(data):
 if __name__ == '__main__':
 
 	fname = "first_100_page"
+	fpath = "rumor_meta_data/"
 	# load rumor meta data
-	rumor = load_data(fname)
+	#rumor = load_data(fname)
+	
+	rumor = load_data_multi(fpath)
+	
 	report_per_month(rumor)
 
 
